@@ -1,0 +1,24 @@
+{
+    "name": "puf-api",
+    "version": "0.0.0",
+    "main": "index.js",
+    "author": "Marcos Kloss",
+    "license": "MIT",
+    "private": true,
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    },
+    "lint-staged": {
+        "./src/**/*.{js,md,json}": [
+            "yarn fix"
+        ]
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^14.1.0",
+        "@commitlint/config-conventional": "^14.1.0",
+        "husky": "^7.0.4",
+        "lint-staged": "^12.0.2"
+    }
+}
