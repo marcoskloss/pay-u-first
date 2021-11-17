@@ -5,6 +5,16 @@
     "author": "Marcos Kloss",
     "license": "MIT",
     "private": true,
+    "scripts": {
+        "dev": "nodemon --exec babel-node src/index.js",
+        "prebuild": "rm -rf ./dist",
+        "build": "babel src --extensions \".js\" --ignore \"*.spec.js,*.test.js\" --out-dir dist --copy-files",
+        "fix": "run-s \"fix:* {@}\" --",
+        "fix:lint": "eslint --fix --no-error-on-unmatched-pattern",
+        "fix-format": "prettier --write",
+        "format": "yarn fix:format 'src/**/*.(js|ts|json|md)'",
+        "lint": "yarn fix:lint src/**/*.{js,ts,md,json}"
+    },
     "commitlint": {
         "extends": [
             "@commitlint/config-conventional"
@@ -16,9 +26,27 @@
         ]
     },
     "devDependencies": {
+        "@babel/cli": "^7.16.0",
+        "@babel/core": "^7.16.0",
+        "@babel/node": "^7.16.0",
+        "@babel/plugin-proposal-optional-chaining": "^7.16.0",
+        "@babel/preset-env": "^7.16.0",
         "@commitlint/cli": "^14.1.0",
         "@commitlint/config-conventional": "^14.1.0",
+        "babel-plugin-module-resolver": "^4.1.0",
+        "eslint": "^8.2.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-json": "^3.1.0",
+        "eslint-plugin-prettier": "^4.0.0",
         "husky": "^7.0.4",
-        "lint-staged": "^12.0.2"
+        "lint-staged": "^12.0.2",
+        "nodemon": "^2.0.15",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^2.4.1"
+    },
+    "dependencies": {
+        "@koa/router": "^10.1.1",
+        "koa": "^2.13.4",
+        "koa-bodyparser": "^4.3.0"
     }
 }
