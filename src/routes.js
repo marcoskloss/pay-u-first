@@ -5,5 +5,5 @@ export const router = new Router()
 
 router.get('/users', users.list)
 router.post('/users', users.create)
-router.put('/users:id', users.update)
-router.delete('/users:id', users.remove)
+router.put('/users/:id', users.update)
+router.delete('/users/:id', users.remove)
