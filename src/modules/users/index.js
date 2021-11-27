@@ -6,11 +6,14 @@ import { prisma } from '~/data'
 export const login = async ctx => {
     try {
         const { email, password } = ctx.request.body
-        const [user] = await prisma.user.findMany({
-            where: { email, password },
+
+        const user = await prisma.user.findUnique({
+            where: { email },
         })
 
-        if (!user) {
+        const passwordMatch = await bcrypt.compare(password, user.password)
+
+        if (!user || !passwordMatch) {
             ctx.status = 404
             return
         }
@@ -19,6 +22,7 @@ export const login = async ctx => {
 
         ctx.body = { user, token }
     } catch (error) {
+        console.log(error)
         ctx.body = 'Ops! Algo de errado aconteceu!'
         ctx.status = 500
     }
