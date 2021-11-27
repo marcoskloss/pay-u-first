@@ -5,7 +5,15 @@ import { prisma } from '~/data'
 
 export const login = async ctx => {
     try {
-        const { email, password } = ctx.request.body
+        const [type, credentials] = ctx.request.headers.authorization.split(' ')
+
+        if (type !== 'Basic') {
+            ctx.status = 400
+            return
+        }
+
+        const decodedCredentials = Buffer.from(credentials, 'base64').toString()
+        const [email, password] = decodedCredentials.split(':')
 
         const user = await prisma.user.findUnique({
             where: { email },
