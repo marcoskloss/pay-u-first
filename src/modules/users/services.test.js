@@ -1,4 +1,9 @@
-import { decodeBasicToken } from './'
+import {
+    decodeBasicToken,
+    BadCredentialsError,
+    TokenTypeError,
+    EncodedError,
+} from './services'
 
 describe('User module', () => {
     it('should return credentials by basic authentication token', () => {
@@ -20,7 +25,7 @@ describe('User module', () => {
         const basicToken = `Bearer ${token}`
 
         const result = () => decodeBasicToken(basicToken)
-        expect(result).toThrowError('Wrong token type')
+        expect(result).toThrowError(TokenTypeError)
     })
 
     it('should throw new error when token is in wrong format', () => {
@@ -31,7 +36,7 @@ describe('User module', () => {
         const basicToken = `Basic ${token}`
 
         const result = () => decodeBasicToken(basicToken)
-        expect(result).toThrowError('Wrong credentials format')
+        expect(result).toThrowError(EncodedError)
     })
 
     it('should throw new error when password is not provided', () => {
@@ -41,7 +46,7 @@ describe('User module', () => {
         const basicToken = `Basic ${token}`
 
         const result = () => decodeBasicToken(basicToken)
-        expect(result).toThrowError('Password is not provided')
+        expect(result).toThrowError(BadCredentialsError)
     })
 
     it('should throw new error when password is not provided', () => {
@@ -51,6 +56,6 @@ describe('User module', () => {
         const basicToken = `Basic ${token}`
 
         const result = () => decodeBasicToken(basicToken)
-        expect(result).toThrowError('Email is not provided')
+        expect(result).toThrowError(BadCredentialsError)
     })
 })

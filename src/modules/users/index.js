@@ -2,18 +2,13 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 import { prisma } from '~/data'
+import { decodeBasicToken } from './services'
 
 export const login = async ctx => {
     try {
-        const [type, credentials] = ctx.request.headers.authorization.split(' ')
-
-        if (type !== 'Basic') {
-            ctx.status = 400
-            return
-        }
-
-        const decodedCredentials = Buffer.from(credentials, 'base64').toString()
-        const [email, password] = decodedCredentials.split(':')
+        const [email, password] = decodeBasicToken(
+            ctx.request.headers.authorization
+        )
 
         const user = await prisma.user.findUnique({
             where: { email },
@@ -30,6 +25,11 @@ export const login = async ctx => {
 
         ctx.body = { user, token }
     } catch (error) {
+        if (error.custom) {
+            ctx.status = 400
+            return
+        }
+
         console.log(error)
         ctx.body = 'Ops! Algo de errado aconteceu!'
         ctx.status = 500

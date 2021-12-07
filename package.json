@@ -9,6 +9,7 @@
         "dev": "nodemon --exec babel-node -- -r dotenv-safe/config src/index.js",
         "prebuild": "rm -rf ./dist",
         "build": "babel src --extensions \".js\" --ignore \"*.spec.js,*.test.js\" --out-dir dist --copy-files",
+        "test": "yarn jest",
         "fix": "run-s \"fix:* {@}\" --",
         "fix:lint": "eslint --fix --no-error-on-unmatched-pattern",
         "fix-format": "prettier --write",
