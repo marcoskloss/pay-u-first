@@ -5,7 +5,7 @@ import {
     EncodedError,
 } from './services'
 
-describe('User module', () => {
+describe('User services', () => {
     it('should return credentials by basic authentication token', () => {
         const email = 'myemail@mail.com'
         const password = 'my-secret-pass'
