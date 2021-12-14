@@ -1,4 +1,5 @@
 import request from 'supertest'
+import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 import { prisma } from '~/data'
@@ -38,15 +39,22 @@ describe('User routes', () => {
         const password = '123456'
 
         const hashedPassword = await bcrypt.hash(password, 10)
-        await prisma.user.create({
+        const user = await prisma.user.create({
             data: { email, password: hashedPassword },
         })
 
-        const result = await request(server).get('/login').auth(email, password)
+        const response = await request(server)
+            .get('/login')
+            .auth(email, password)
+        const decodedToken = jwt.verify(
+            response.body.token,
+            process.env.JWT_SECRET
+        )
 
-        expect(result.status).toBe(200)
-        expect(result.body.user).toBeTruthy()
-        expect(result.body.user.id).toBeTruthy()
-        expect(result.body.user.email).toBeTruthy()
+        expect(response.status).toBe(200)
+        expect(response.body.user.id).toBe(user.id)
+        expect(response.body.user.email).toBe(user.email)
+        expect(response.body.user.password).toBeFalsy()
+        expect(decodedToken.sub).toBe(user.id)
     })
 })

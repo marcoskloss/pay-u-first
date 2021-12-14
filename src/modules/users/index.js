@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 
 import { prisma } from '~/data'
 import { decodeBasicToken } from './services'
+import './model'
 
 export const login = async ctx => {
     try {
@@ -11,17 +12,10 @@ export const login = async ctx => {
         )
 
         const user = await prisma.user.findUnique({
-            where: { email },
+            where: { email, password },
         })
 
         if (!user) {
-            ctx.status = 404
-            return
-        }
-
-        const passwordMatch = await bcrypt.compare(password, user?.password)
-
-        if (!passwordMatch) {
             ctx.status = 404
             return
         }
