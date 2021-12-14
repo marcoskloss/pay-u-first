@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-import { prisma } from '~/data'
 import { decodeBasicToken } from './services'
-import './model'
+import { User } from './model'
 
 export const login = async ctx => {
     try {
@@ -11,7 +10,7 @@ export const login = async ctx => {
             ctx.request.headers.authorization
         )
 
-        const user = await prisma.user.findUnique({
+        const user = await User.findUnique({
             where: { email, password },
         })
 
@@ -36,7 +35,7 @@ export const login = async ctx => {
 }
 
 export const list = async ctx => {
-    const users = await prisma.user.findMany()
+    const users = await User.findMany()
     ctx.body = users
 }
 
@@ -48,7 +47,7 @@ export const create = async ctx => {
             salt
         )
 
-        const user = await prisma.user.create({
+        const user = await User.create({
             data: {
                 name: ctx.request.body.name,
                 email: ctx.request.body.email,
