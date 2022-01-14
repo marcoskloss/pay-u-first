@@ -7,7 +7,12 @@ Api do projeto puf (pay you first) proposto pelo curso 'Desenvolvendo Software d
     cd puf-api
     yarn
     
+    mv .env.example .env
+    # preencha os dados do arquivo .env
+    
     docker-compose up -d # precisa do docker-compose instalado
+    
+    yarn db:migrte
     
     yarn dev
 ```
