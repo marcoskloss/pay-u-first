@@ -12,7 +12,10 @@ const passwordCheck = async (params, next) => {
         return result
     }
 
-    const passwordMatch = bcrypt.compare(passwordPlainText, result.password)
+    const passwordMatch = await bcrypt.compare(
+        passwordPlainText,
+        result.password
+    )
 
     if (!passwordMatch) return false
 
