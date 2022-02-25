@@ -23,9 +23,14 @@ describe('User routes', () => {
 
         expect(response.status).toBe(404)
     })
+
     it('given wrong password it should return not found', async () => {
         const email = 'marcos@email.com'
         const password = 'some-password'
+
+        await prisma.user.create({
+            data: { email, password: 'fake-pass' },
+        })
 
         const response = await request(server)
             .get('/login')
