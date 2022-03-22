@@ -6,7 +6,7 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-        "db:migrate": "yarn prisma migrate dev --preview-feature",
+        "db:migrate": "yarn prisma migrate dev",
         "dev": "nodemon --exec babel-node -- -r dotenv-safe/config src/index.js",
         "prebuild": "rm -rf ./dist",
         "build": "babel src --extensions \".js\" --ignore \"*.spec.js,*.test.js\" --out-dir dist --copy-files",
