@@ -8,6 +8,10 @@ import { app } from './serverSetup'
 
 const server = app.listen()
 
+afterAll(async () => {
+    server.close()
+})
+
 describe('User routes', () => {
     beforeEach(async () => {
         await prisma.user.deleteMany({})
