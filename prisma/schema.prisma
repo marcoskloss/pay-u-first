@@ -16,5 +16,27 @@ model User {
     updatedAt DateTime @default(now())
     deletedAt DateTime?
 
+    transactions Transaction[]
+
     @@map("users")
+}
+
+enum Recurrence {
+    monthly
+}
+
+model Transaction {
+    id String @id @default(cuid())
+    userId String
+    description String
+    value Float
+    recurrence Recurrence?
+    installments Int?
+    isSubscription Boolean?
+    dueDate DateTime?
+    resolved Boolean @default(false)
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@map("transactions")
 }
