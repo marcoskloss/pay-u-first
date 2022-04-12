@@ -89,4 +89,31 @@ describe('Transaction routes', () => {
 
         expect(response.status).toBe(401)
     })
+
+    it('should create a transaction for logged in user', async () => {
+        const email = 'marcos@email.com'
+        const password = '123456'
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email, password: hashedPassword },
+        })
+
+        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+
+        const transactionData = {
+            description: 'Transaction 123',
+            value: 123,
+        }
+
+        const response = await request(server)
+            .post('/transactions')
+            .set('Authorization', `Bearer ${token}`)
+            .send(transactionData)
+
+        expect(response.status).toBe(200)
+        expect(response.body.id).toEqual(expect.any(String))
+        expect(response.body.value).toBe(transactionData.value)
+        expect(response.body.description).toBe(transactionData.description)
+    })
 })
