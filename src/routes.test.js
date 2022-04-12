@@ -12,11 +12,11 @@ afterAll(async () => {
     server.close()
 })
 
-describe('User routes', () => {
-    beforeEach(async () => {
-        await prisma.user.deleteMany({})
-    })
+beforeEach(async () => {
+    await prisma.user.deleteMany({})
+})
 
+describe('User routes', () => {
     it('given wrong email it should return not found', async () => {
         const email = 'useremail@mai.com'
         const password = '123456'
@@ -65,5 +65,16 @@ describe('User routes', () => {
         expect(response.body.user.email).toBe(user.email)
         expect(response.body.user.password).toBeFalsy()
         expect(decodedToken.sub).toBe(user.id)
+    })
+})
+
+describe('Transaction routes', () => {
+    it('should throw error when trying to create a transaction without auth', async () => {
+        const response = await request(server).post('/transactions').send({
+            description: 'Transaction 123',
+            value: 123,
+        })
+
+        expect(response.status).toBe(401)
     })
 })
