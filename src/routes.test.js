@@ -77,4 +77,16 @@ describe('Transaction routes', () => {
 
         expect(response.status).toBe(401)
     })
+
+    it('should throw error when trying to create a transaction without correct auth header', async () => {
+        const response = await request(server)
+            .post('/transactions')
+            .set('Bearer', '')
+            .send({
+                description: 'Transaction 123',
+                value: 123,
+            })
+
+        expect(response.status).toBe(401)
+    })
 })
