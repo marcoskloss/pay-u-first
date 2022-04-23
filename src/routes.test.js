@@ -116,4 +116,20 @@ describe('Transaction routes', () => {
         expect(response.body.value).toBe(transactionData.value)
         expect(response.body.description).toBe(transactionData.description)
     })
+
+    it('should return 401 when trying to create a transaction with invalid token', async () => {
+        const token = 'abc'
+
+        const transactionData = {
+            description: 'Transaction 123',
+            value: 123,
+        }
+
+        const response = await request(server)
+            .post('/transactions')
+            .set('Authorization', `Bearer ${token}`)
+            .send(transactionData)
+
+        expect(response.status).toBe(401)
+    })
 })
