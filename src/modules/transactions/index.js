@@ -36,3 +36,14 @@ export const update = async ctx => {
     })
     ctx.body = { id: ctx.params.id }
 }
+
+export const remove = async ctx => {
+    await Transaction.deleteMany({
+        where: {
+            id: ctx.params.id,
+            userId: ctx.auth.user.id,
+        },
+    })
+
+    ctx.body = { id: ctx.params.id }
+}

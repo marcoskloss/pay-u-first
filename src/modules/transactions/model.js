@@ -5,4 +5,5 @@ export const Transaction = {
     findMany: prisma.transaction.findMany,
     update: prisma.transaction.update,
     updateMany: prisma.transaction.updateMany,
+    deleteMany: prisma.transaction.deleteMany,
 }
