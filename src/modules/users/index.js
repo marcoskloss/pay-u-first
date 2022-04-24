@@ -62,10 +62,29 @@ export const create = async ctx => {
     }
 }
 
-export const update = ctx => {
-    ctx.body = 'update'
+export const update = async ctx => {
+    const { email, name } = ctx.request.body
+
+    try {
+        const user = await User.update({
+            data: { email, name },
+            where: { id: ctx.params.id },
+        })
+        ctx.body = user
+    } catch (error) {
+        ctx.status = 500
+        ctx.body = 'Ops! Algo de errado aconteceu!'
+    }
 }
 
-export const remove = ctx => {
-    ctx.body = 'remove'
+export const remove = async ctx => {
+    try {
+        await User.delete({
+            where: { id: ctx.params.id },
+        })
+        ctx.body = { id: ctx.params.id }
+    } catch (error) {
+        ctx.status = 500
+        ctx.body = 'Ops! Algo de errado aconteceu!'
+    }
 }
