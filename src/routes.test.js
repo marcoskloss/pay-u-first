@@ -14,6 +14,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
     await prisma.user.deleteMany({})
+    await prisma.transaction.deleteMany({})
 })
 
 describe('User routes', () => {
@@ -131,5 +132,51 @@ describe('Transaction routes', () => {
             .send(transactionData)
 
         expect(response.status).toBe(401)
+    })
+
+    it('should return 400 when trying to create a transaction without value', async () => {
+        const email = 'marcos@email.com'
+        const password = '123456'
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email, password: hashedPassword },
+        })
+
+        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+
+        const transactionData = {
+            description: 'Transaction 123',
+        }
+
+        const response = await request(server)
+            .post('/transactions')
+            .set('Authorization', `Bearer ${token}`)
+            .send(transactionData)
+
+        expect(response.status).toBe(400)
+    })
+
+    it.only('should return 400 when trying to create a transaction without description', async () => {
+        const email = 'marcos@email.com'
+        const password = '123456'
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email, password: hashedPassword },
+        })
+
+        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+
+        const transactionData = {
+            value: 12,
+        }
+
+        const response = await request(server)
+            .post('/transactions')
+            .set('Authorization', `Bearer ${token}`)
+            .send(transactionData)
+
+        expect(response.status).toBe(400)
     })
 })
