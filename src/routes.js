@@ -18,3 +18,4 @@ router.delete('/users/:id', authCheck, users.remove)
 // Transactions
 router.post('/transactions', authCheck, transactions.create)
 router.get('/transactions', authCheck, transactions.list)
+router.put('/transactions/:id', authCheck, transactions.update)

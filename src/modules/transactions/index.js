@@ -27,3 +27,12 @@ export const list = async ctx => {
 
     ctx.body = transactions
 }
+
+export const update = async ctx => {
+    const { description, value } = ctx.request.body
+    await Transaction.updateMany({
+        data: { description, value },
+        where: { id: ctx.params.id, userId: ctx.auth.user.id },
+    })
+    ctx.body = { id: ctx.params.id }
+}
