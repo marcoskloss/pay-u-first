@@ -2,7 +2,7 @@ import request from 'supertest'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
-import { prisma } from '~/data'
+import { prisma } from './data'
 
 import { app } from './serverSetup'
 
@@ -157,7 +157,7 @@ describe('Transaction routes', () => {
         expect(response.status).toBe(400)
     })
 
-    it.only('should return 400 when trying to create a transaction without description', async () => {
+    it('should return 400 when trying to create a transaction without description', async () => {
         const email = 'marcos@email.com'
         const password = '123456'
 
@@ -178,5 +178,43 @@ describe('Transaction routes', () => {
             .send(transactionData)
 
         expect(response.status).toBe(400)
+    })
+
+    it('should return the transactions of a given user', async () => {
+        const password = '123456'
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email: 'a@mail.com', password: hashedPassword },
+        })
+        const user2 = await prisma.user.create({
+            data: { email: 'b@mail.com', password: hashedPassword },
+        })
+
+        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+
+        const transaction = await prisma.transaction.create({
+            data: {
+                description: 'foo',
+                value: 42,
+                userId: user.id,
+            },
+        })
+
+        await prisma.transaction.create({
+            data: {
+                description: 'description',
+                value: 123,
+                userId: user2.id,
+            },
+        })
+
+        const response = await request(server)
+            .get('/transactions')
+            .set('Authorization', `Bearer ${token}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.length).toBe(1)
+        expect(response.body[0].id).toBe(transaction.id)
     })
 })

@@ -19,3 +19,11 @@ export const create = async ctx => {
         return Promise.reject(error)
     }
 }
+
+export const list = async ctx => {
+    const transactions = await Transaction.findMany({
+        where: { userId: ctx.auth.user.id },
+    })
+
+    ctx.body = transactions
+}
