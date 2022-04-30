@@ -8,6 +8,21 @@ beforeEach(async () => {
     await prisma.transaction.deleteMany({})
 })
 
+async function createAuthUser(userData) {
+    const data = {
+        email: 'marcos@email.com',
+        password: '123456',
+        ...userData,
+    }
+
+    data.password = await bcrypt.hash(data.password, 10)
+
+    const user = await prisma.user.create({ data })
+    const token = generateToken({ sub: user.id })
+
+    return { user, token }
+}
+
 describe('Transaction routes', () => {
     it('should throw error when trying to create a transaction without auth', async () => {
         const response = await global.testRequest.post('/transactions').send({
@@ -31,15 +46,7 @@ describe('Transaction routes', () => {
     })
 
     it('should create a transaction for logged in user', async () => {
-        const email = 'marcos@email.com'
-        const password = '123456'
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email, password: hashedPassword },
-        })
-
-        const token = generateToken({ sub: user.id })
+        const { token } = await createAuthUser()
 
         const transactionData = {
             description: 'Transaction 123',
@@ -74,16 +81,7 @@ describe('Transaction routes', () => {
     })
 
     it('should return 400 when trying to create a transaction without value', async () => {
-        const email = 'marcos@email.com'
-        const password = '123456'
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email, password: hashedPassword },
-        })
-
-        const token = generateToken({ sub: user.id })
-
+        const { token } = await createAuthUser()
         const transactionData = {
             description: 'Transaction 123',
         }
@@ -97,16 +95,7 @@ describe('Transaction routes', () => {
     })
 
     it('should return 400 when trying to create a transaction without description', async () => {
-        const email = 'marcos@email.com'
-        const password = '123456'
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email, password: hashedPassword },
-        })
-
-        const token = generateToken({ sub: user.id })
-
+        const { token } = await createAuthUser()
         const transactionData = {
             value: '12',
         }
@@ -120,17 +109,8 @@ describe('Transaction routes', () => {
     })
 
     it('should return the transactions of a given user', async () => {
-        const password = '123456'
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email: 'a@mail.com', password: hashedPassword },
-        })
-        const user2 = await prisma.user.create({
-            data: { email: 'b@mail.com', password: hashedPassword },
-        })
-
-        const token = generateToken({ sub: user.id })
+        const { token, user } = await createAuthUser({ email: 'a@mail.com' })
+        const { user: user2 } = await createAuthUser({ email: 'b@mail.com' })
 
         const transaction = await prisma.transaction.create({
             data: {

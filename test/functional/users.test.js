@@ -8,6 +8,23 @@ beforeEach(async () => {
     await prisma.transaction.deleteMany({})
 })
 
+async function createAuthUser(userData) {
+    const data = {
+        email: 'marcos@email.com',
+        name: 'john',
+        password: '123456',
+        ...userData,
+    }
+    const rawPassword = data.password
+
+    data.password = await bcrypt.hash(data.password, 10)
+
+    const user = await prisma.user.create({ data })
+    const token = generateToken({ sub: user.id })
+
+    return { user, token, rawPassword }
+}
+
 describe('User routes', () => {
     it('given wrong email it should return not found', async () => {
         const email = 'useremail@mai.com'
@@ -36,17 +53,11 @@ describe('User routes', () => {
     })
 
     it('should return logged in user by correct credentials', async () => {
-        const email = 'marcos@email.com'
-        const password = '123456'
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email, password: hashedPassword },
-        })
+        const { user, rawPassword } = await createAuthUser()
 
         const response = await global.testRequest
             .get('/login')
-            .auth(email, password)
+            .auth(user.email, rawPassword)
 
         const decodedToken = verifyToken(response.body.token)
 
@@ -58,15 +69,8 @@ describe('User routes', () => {
     })
 
     it('should update the logged in user data', async () => {
-        const email = 'marcos@email.com'
-        const password = '123456'
+        const { token } = await createAuthUser()
 
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email, password: hashedPassword },
-        })
-
-        const token = generateToken({ sub: user.id })
         const newEmail = 'marcos+1@mail.com'
 
         const response = await global.testRequest
@@ -81,15 +85,7 @@ describe('User routes', () => {
     })
 
     it('should delete the logged in user', async () => {
-        const email = 'marcos@email.com'
-        const password = '123456'
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: { email, password: hashedPassword },
-        })
-
-        const token = generateToken({ sub: user.id })
+        const { user, token } = await createAuthUser()
 
         const response = await global.testRequest
             .delete('/me')
