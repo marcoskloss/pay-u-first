@@ -1,7 +1,10 @@
-require('dotenv-safe/config')
-const { execSync } = require('child_process')
+const { resolve } = require('path')
+const root = resolve(__dirname)
 
-process.env.DB_URL = `${process.env.DB_URL}_testdb?schema=test_schema`
-execSync('yarn prisma migrate deploy')
-
-module.exports = {}
+module.exports = {
+    displayName: 'root-tests',
+    rootDir: root,
+    testMatch: ['<rootDir>/src/**/*.test.js'],
+    testEnvironment: 'node',
+    clearMocks: true,
+}
