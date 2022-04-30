@@ -73,7 +73,7 @@ describe('Transaction routes', () => {
     it('should throw error when trying to create a transaction without auth', async () => {
         const response = await request(server).post('/transactions').send({
             description: 'Transaction 123',
-            value: 123,
+            value: '123',
         })
 
         expect(response.status).toBe(401)
@@ -85,7 +85,7 @@ describe('Transaction routes', () => {
             .set('Bearer', '')
             .send({
                 description: 'Transaction 123',
-                value: 123,
+                value: '123',
             })
 
         expect(response.status).toBe(401)
@@ -104,7 +104,7 @@ describe('Transaction routes', () => {
 
         const transactionData = {
             description: 'Transaction 123',
-            value: 123,
+            value: '123',
         }
 
         const response = await request(server)
@@ -123,7 +123,7 @@ describe('Transaction routes', () => {
 
         const transactionData = {
             description: 'Transaction 123',
-            value: 123,
+            value: '123',
         }
 
         const response = await request(server)
@@ -169,7 +169,7 @@ describe('Transaction routes', () => {
         const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
 
         const transactionData = {
-            value: 12,
+            value: '12',
         }
 
         const response = await request(server)
@@ -196,7 +196,7 @@ describe('Transaction routes', () => {
         const transaction = await prisma.transaction.create({
             data: {
                 description: 'foo',
-                value: 42,
+                value: '42',
                 userId: user.id,
             },
         })
@@ -204,7 +204,7 @@ describe('Transaction routes', () => {
         await prisma.transaction.create({
             data: {
                 description: 'description',
-                value: 123,
+                value: '123',
                 userId: user2.id,
             },
         })
