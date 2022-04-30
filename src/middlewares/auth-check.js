@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken'
 import { User } from '../modules/users/model'
+import { verifyToken } from '../modules/users/services'
 
 const decodeBearerToken = bearerToken => {
     if (!bearerToken) {
@@ -13,7 +13,7 @@ const decodeBearerToken = bearerToken => {
     }
 
     try {
-        return jwt.verify(token, process.env.JWT_SECRET)
+        return verifyToken(token)
     } catch {
         return null
     }

@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 
 import { decodeBasicToken } from './services'
 import { User } from './model'
+import { generateToken } from './services'
 
 export const login = async ctx => {
     try {
@@ -19,7 +19,7 @@ export const login = async ctx => {
             return
         }
 
-        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+        const token = generateToken({ sub: user.id })
 
         ctx.body = { user, token }
     } catch (error) {
@@ -34,12 +34,7 @@ export const login = async ctx => {
     }
 }
 
-export const list = async ctx => {
-    const users = await User.findMany()
-    ctx.body = users
-}
-
-export const create = async ctx => {
+export const signup = async ctx => {
     try {
         const salt = 10
         const hashedPassword = await bcrypt.hash(
@@ -68,7 +63,7 @@ export const update = async ctx => {
     try {
         const user = await User.update({
             data: { email, name },
-            where: { id: ctx.params.id },
+            where: { id: ctx.auth.user.id },
         })
         ctx.body = user
     } catch (error) {
@@ -80,9 +75,9 @@ export const update = async ctx => {
 export const remove = async ctx => {
     try {
         await User.delete({
-            where: { id: ctx.params.id },
+            where: { id: ctx.auth.user.id },
         })
-        ctx.body = { id: ctx.params.id }
+        ctx.body = { id: ctx.auth.user.id }
     } catch (error) {
         ctx.status = 500
         ctx.body = 'Ops! Algo de errado aconteceu!'

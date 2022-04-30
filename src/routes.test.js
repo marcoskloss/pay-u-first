@@ -1,10 +1,10 @@
 import request from 'supertest'
-import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 import { prisma } from './data'
 
 import { app } from './serverSetup'
+import { generateToken, verifyToken } from '~/modules/users/services'
 
 const server = app.listen()
 
@@ -56,10 +56,8 @@ describe('User routes', () => {
         const response = await request(server)
             .get('/login')
             .auth(email, password)
-        const decodedToken = jwt.verify(
-            response.body.token,
-            process.env.JWT_SECRET
-        )
+
+        const decodedToken = verifyToken(response.body.token)
 
         expect(response.status).toBe(200)
         expect(response.body.user.id).toBe(user.id)
@@ -67,6 +65,9 @@ describe('User routes', () => {
         expect(response.body.user.password).toBeFalsy()
         expect(decodedToken.sub).toBe(user.id)
     })
+
+    it.todo('should update the logged in user data')
+    it.todo('should delete the logged in user')
 })
 
 describe('Transaction routes', () => {
@@ -100,7 +101,7 @@ describe('Transaction routes', () => {
             data: { email, password: hashedPassword },
         })
 
-        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+        const token = generateToken({ sub: user.id })
 
         const transactionData = {
             description: 'Transaction 123',
@@ -143,7 +144,7 @@ describe('Transaction routes', () => {
             data: { email, password: hashedPassword },
         })
 
-        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+        const token = generateToken({ sub: user.id })
 
         const transactionData = {
             description: 'Transaction 123',
@@ -166,7 +167,7 @@ describe('Transaction routes', () => {
             data: { email, password: hashedPassword },
         })
 
-        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+        const token = generateToken({ sub: user.id })
 
         const transactionData = {
             value: '12',
@@ -191,7 +192,7 @@ describe('Transaction routes', () => {
             data: { email: 'b@mail.com', password: hashedPassword },
         })
 
-        const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET)
+        const token = generateToken({ sub: user.id })
 
         const transaction = await prisma.transaction.create({
             data: {

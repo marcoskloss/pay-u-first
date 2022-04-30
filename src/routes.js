@@ -7,13 +7,11 @@ export const router = new Router()
 
 // Auth
 router.get('/login', users.login)
+router.post('/signup', users.signup)
 
 // Users
-router.post('/users', users.create)
-
-router.get('/users', authCheck, users.list)
-router.put('/users/:id', authCheck, users.update)
-router.delete('/users/:id', authCheck, users.remove)
+router.put('/me', authCheck, users.update)
+router.delete('/me', authCheck, users.remove)
 
 // Transactions
 router.post('/transactions', authCheck, transactions.create)

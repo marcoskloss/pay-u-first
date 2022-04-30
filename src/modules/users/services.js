@@ -1,3 +1,5 @@
+import jwt from 'jsonwebtoken'
+
 export class TokenTypeError extends Error {
     constructor(message = 'Wrong token type') {
         super(message)
@@ -43,4 +45,12 @@ export function decodeBasicToken(token) {
     }
 
     return [email, password]
+}
+
+export function generateToken(payload) {
+    return jwt.sign(payload, process.env.JWT_SECRET)
+}
+
+export function verifyToken(token) {
+    return jwt.verify(token, process.env.JWT_SECRET)
 }
