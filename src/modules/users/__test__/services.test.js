@@ -3,7 +3,7 @@ import {
     BadCredentialsError,
     TokenTypeError,
     EncodedError,
-} from './services'
+} from '../services'
 
 describe('User services', () => {
     it('should return credentials by basic authentication token', () => {
