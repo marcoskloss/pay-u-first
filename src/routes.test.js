@@ -66,8 +66,49 @@ describe('User routes', () => {
         expect(decodedToken.sub).toBe(user.id)
     })
 
-    it.todo('should update the logged in user data')
-    it.todo('should delete the logged in user')
+    it('should update the logged in user data', async () => {
+        const email = 'marcos@email.com'
+        const password = '123456'
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email, password: hashedPassword },
+        })
+
+        const token = generateToken({ sub: user.id })
+        const newEmail = 'marcos+1@mail.com'
+
+        const response = await request(server)
+            .put('/me')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ email: newEmail })
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual(
+            expect.objectContaining({ email: newEmail })
+        )
+    })
+
+    it('should delete the logged in user', async () => {
+        const email = 'marcos@email.com'
+        const password = '123456'
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email, password: hashedPassword },
+        })
+
+        const token = generateToken({ sub: user.id })
+
+        const response = await request(server)
+            .delete('/me')
+            .set('Authorization', `Bearer ${token}`)
+
+        expect(response.status).toBe(200)
+        await expect(
+            prisma.user.findUnique({ where: { id: user.id } })
+        ).resolves.toBeNull()
+    })
 })
 
 describe('Transaction routes', () => {
