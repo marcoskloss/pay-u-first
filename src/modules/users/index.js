@@ -50,7 +50,9 @@ export const signup = async ctx => {
             },
         })
 
-        ctx.body = user
+        const token = generateToken({ sub: user.id })
+
+        ctx.body = { user, token }
     } catch (error) {
         ctx.status = 500
         ctx.body = 'Ops! Algo de errado aconteceu!'
