@@ -16,6 +16,7 @@ export const login = async ctx => {
 
         if (!user) {
             ctx.status = 404
+            ctx.body = { error: 'Usuário não encontrado' }
             return
         }
 
