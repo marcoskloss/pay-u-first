@@ -13,6 +13,7 @@ export const create = async ctx => {
     } catch (error) {
         if (error instanceof Prisma.PrismaClientValidationError) {
             ctx.status = 400
+            ctx.body = { error: 'Dados da transação são inválidos' }
             return
         }
 
