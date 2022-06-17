@@ -3,8 +3,7 @@ const { execSync } = require('child_process')
 const request = require('supertest')
 
 process.env.DB_URL = `${process.env.DB_URL}_testdb?schema=test_schema`
-execSync('yarn prisma migrate deploy')
-
+execSync('yarn db:migrate')
 const { app } = require('../src/serverSetup')
 
 let server
